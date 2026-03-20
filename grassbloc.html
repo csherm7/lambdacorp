@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>grassbloc — Lambda Zulu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Unbounded:wght@300;400;700;900&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --black: #080808;
+      --off-white: #f0ede6;
+      --dim: #2a2a2a;
+      --muted: #555;
+      --faint: #1e1e1e;
+      --accent: #00e8d5;
+      --accent-dim: #008f84;
+      --mono: 'Space Mono', monospace;
+      --display: 'Unbounded', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--off-white);
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.6;
+      cursor: crosshair;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.35;
+    }
+
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 22px 40px;
+      border-bottom: 1px solid var(--dim);
+      position: sticky;
+      top: 0;
+      background: var(--black);
+      z-index: 100;
+    }
+    .nav-logo {
+      font-family: var(--display);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--off-white);
+    }
+    .nav-logo span { color: var(--accent); font-family: 'Space Mono', monospace; font-size: 15px; }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-links a.active { color: var(--accent); }
+
+    /* ── ARTIST HERO ── */
+    .artist-hero {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      min-height: 480px;
+      border-bottom: 1px solid var(--dim);
+    }
+
+    /* ── SIDE PANEL (left this time for variation) ── */
+    .artist-panel {
+      background: var(--faint);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 40px 32px;
+      border-right: 1px solid var(--dim);
+    }
+    .panel-stat {
+      padding: 20px 0;
+      border-bottom: 1px solid var(--dim);
+    }
+    .panel-stat:first-child { padding-top: 0; }
+    .panel-stat:last-child { border-bottom: none; padding-bottom: 0; }
+    .panel-stat-label {
+      font-size: 9px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .panel-stat-value {
+      font-family: var(--display);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--off-white);
+      letter-spacing: -0.02em;
+    }
+    .panel-stat-sub {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 4px;
+      line-height: 1.6;
+    }
+
+    .artist-hero-text {
+      padding: 56px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .breadcrumb {
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+    .breadcrumb a { color: var(--accent); }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .artist-name-large {
+      font-family: var(--display);
+      font-size: clamp(40px, 7vw, 84px);
+      font-weight: 900;
+      line-height: 0.9;
+      letter-spacing: -0.03em;
+      text-transform: lowercase;
+      color: var(--off-white);
+    }
+    .artist-name-large em {
+      display: block;
+      color: var(--accent);
+      font-style: normal;
+    }
+    .artist-role {
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 20px;
+    }
+    .artist-bio-long {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.9;
+      max-width: 480px;
+      margin-top: 32px;
+    }
+    .artist-socials {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 32px;
+    }
+    .social-btn {
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 10px 18px;
+      border: 1px solid var(--dim);
+      color: var(--muted);
+      transition: all 0.15s;
+      display: inline-block;
+    }
+    .social-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .social-btn.primary { border-color: var(--accent); color: var(--accent); }
+    .social-btn.primary:hover { background: var(--accent); color: var(--black); }
+
+    /* ── SECTION HEADER ── */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 40px;
+      border-bottom: 1px solid var(--dim);
+    }
+    .section-label {
+      font-size: 9px;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .section-count {
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+    }
+
+    /* ── RELEASE LIST ── */
+    .release-list { border-bottom: 1px solid var(--dim); }
+    .release-row {
+      display: grid;
+      grid-template-columns: 80px 1fr auto;
+      align-items: center;
+      gap: 24px;
+      padding: 20px 40px;
+      border-bottom: 1px solid var(--dim);
+      transition: background 0.15s;
+      cursor: pointer;
+    }
+    .release-row:last-child { border-bottom: none; }
+    .release-row:hover { background: var(--faint); }
+    .release-row:hover .release-row-title { color: var(--accent); }
+    .release-thumb {
+      width: 80px;
+      height: 80px;
+      background: #111;
+      border: 1px solid var(--dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .release-row-meta { min-width: 0; }
+    .release-row-year {
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .release-row-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--off-white);
+      transition: color 0.15s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .release-row-type {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .release-row-links {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+    .row-link {
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 7px 12px;
+      border: 1px solid var(--dim);
+      color: var(--muted);
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .row-link:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 28px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--dim);
+    }
+    .footer-logo {
+      font-family: var(--display);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .footer-copy { font-size: 10px; letter-spacing: 0.1em; color: #333; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .breadcrumb        { animation: fadeUp 0.4s ease both 0.05s; }
+    .artist-name-large { animation: fadeUp 0.5s ease both 0.1s; }
+    .artist-role       { animation: fadeUp 0.4s ease both 0.2s; }
+    .artist-bio-long   { animation: fadeUp 0.4s ease both 0.25s; }
+    .artist-socials    { animation: fadeUp 0.4s ease both 0.3s; }
+    .artist-panel      { animation: fadeUp 0.5s ease both 0.15s; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 860px) {
+      .artist-hero { grid-template-columns: 1fr; }
+      .artist-panel { display: none; }
+      nav, .artist-hero-text, footer, .section-header { padding-left: 20px; padding-right: 20px; }
+      .release-row { padding: 16px 20px; gap: 16px; }
+      .release-row-links { flex-wrap: wrap; gap: 4px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="lambdacorporation.html" class="nav-logo">Lambda<span><svg width="11" height="14" viewBox="0 0 11 14" style="display:inline-block;vertical-align:middle;margin:0 1px;" xmlns="http://www.w3.org/2000/svg"><polyline points="1,1 5.5,8 10,14" fill="none" stroke="#00e8d5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><polyline points="5.5,8 1,14" fill="none" stroke="#00e8d5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Zulu</a>
+    <ul class="nav-links">
+      <li><a href="lambdacorporation.html#releases">Releases</a></li>
+      <li><a href="lambdacorporation.html#artists" class="active">Artists</a></li>
+    </ul>
+  </nav>
+
+  <!-- ARTIST HERO -->
+  <section class="artist-hero">
+
+    <div class="artist-panel">
+      <div class="panel-stat">
+        <div class="panel-stat-label">Artist</div>
+        <div class="panel-stat-value">grassbloc</div>
+        <div class="panel-stat-sub">Producer · Composer</div>
+      </div>
+      <div class="panel-stat">
+        <div class="panel-stat-label">Label</div>
+        <div class="panel-stat-value">Lambda Zulu</div>
+        <div class="panel-stat-sub">Independent — New York</div>
+      </div>
+      <div class="panel-stat">
+        <div class="panel-stat-label">Latest Release</div>
+        <div class="panel-stat-value">11pm on 73rd</div>
+        <div class="panel-stat-sub">EP · 2024 · Available everywhere</div>
+      </div>
+      <div class="panel-stat">
+        <div class="panel-stat-label">Genre</div>
+        <div class="panel-stat-value">Lo-Fi</div>
+        <div class="panel-stat-sub">Atmospheric · Instrumental · Mood</div>
+      </div>
+      <div class="panel-stat">
+        <div class="panel-stat-label">Releases</div>
+        <div class="panel-stat-value">03 on Label</div>
+        <div class="panel-stat-sub">Batch 01 · 11pm on 73rd · ...and time stares back</div>
+      </div>
+    </div>
+
+    <div class="artist-hero-text">
+      <div>
+        <div class="breadcrumb"><a href="lambdacorporation.html">Lambda Zulu</a> / Artists / grassbloc</div>
+        <div class="artist-name-large">grass<em>bloc</em></div>
+        <div class="artist-role">Producer · Composer</div>
+        <p class="artist-bio-long">
+          Lo-fi and instrumental work rooted in mood and atmosphere. grassbloc makes releases that feel like specific times of day — the particular quality of light at 11pm, the way a Tuesday in autumn sits differently than anything else. Warm, reflective, and unhurried.
+          <br><br>
+          Two EPs on Lambda Zulu, both mapping the same emotional territory from different angles. Music for commutes that feel longer than they are, for rooms you don't want to leave yet.
+        </p>
+      </div>
+      <div class="artist-socials">
+        <a href="https://open.spotify.com/artist/6JsbdOMw7RGYlyRFALP8PN" target="_blank" class="social-btn primary">Spotify</a>
+        <a href="https://music.apple.com/us/artist/grassbloc/1772149013" target="_blank" class="social-btn">Apple Music</a>
+        <a href="https://www.youtube.com/channel/UCEHURF1OJnFKTDV5STZbMaA" target="_blank" class="social-btn">YouTube</a>
+        <a href="https://www.instagram.com/grassbloc" target="_blank" class="social-btn">Instagram</a>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- DISCOGRAPHY -->
+  <div class="section-header">
+    <div class="section-label">Discography</div>
+    <div class="section-count">03 Releases</div>
+  </div>
+
+  <div class="release-list">
+
+    <div class="release-row">
+      <div class="release-thumb">
+        <img src="11pm-on-73rd.jpg" style="width:100%;height:100%;object-fit:cover;" />
+      </div>
+      <div class="release-row-meta">
+        <div class="release-row-year">2025</div>
+        <div class="release-row-title">11pm on 73rd</div>
+        <div class="release-row-type">EP · Latest Release</div>
+      </div>
+      <div class="release-row-links">
+        <a href="https://open.spotify.com/album/1qQvnOVTxT4OFnTnO8nqp0" target="_blank" class="row-link">Spotify</a>
+        <a href="https://music.apple.com/us/album/11pm-on-73rd-ep/1825457199" target="_blank" class="row-link">Apple</a>
+        <a href="https://www.youtube.com/watch?v=e95moFxnWEs&list=OLAK5uy_n8FkE_Fx_Kznzu9jl_AFL3wiejlNJizmw" target="_blank" class="row-link">YouTube</a>
+      </div>
+    </div>
+
+    <div class="release-row">
+      <div class="release-thumb">
+        <img src="1...and-time-stares-back.jpg" style="width:100%;height:100%;object-fit:cover;" />
+      </div>
+      <div class="release-row-meta">
+        <div class="release-row-year">2025</div>
+        <div class="release-row-title">...and time stares back</div>
+        <div class="release-row-type">EP</div>
+      </div>
+      <div class="release-row-links">
+        <a href="https://open.spotify.com/album/6WGXuZkMOFAveyyVB3OAoA" target="_blank" class="row-link">Spotify</a>
+        <a href="https://music.apple.com/us/album/and-time-stares-back/1820815450" target="_blank" class="row-link">Apple</a>
+        <a href="https://youtube.com/playlist?list=OLAK5uy_lyS3_RuiwDBOnG3jzMUXLqoVcpfoiXnYw" target="_blank" class="row-link">YouTube</a>
+      </div>
+    </div>
+
+    <div class="release-row">
+      <div class="release-thumb">
+        <img src="batch-01.jpg" style="width:100%;height:100%;object-fit:cover;" />
+      </div>
+      <div class="release-row-meta">
+        <div class="release-row-year">2024</div>
+        <div class="release-row-title">Batch 01</div>
+        <div class="release-row-type">Various</div>
+      </div>
+      <div class="release-row-links">
+        <a href="https://open.spotify.com/album/4cggby22W2tHjSxwUWAK8J" target="_blank" class="row-link">Spotify</a>
+        <a href="https://music.apple.com/us/album/batch-01/1772362685" target="_blank" class="row-link">Apple</a>
+        <a href="https://www.youtube.com/watch?v=3-GK1vjvnhU&list=OLAK5uy_lFLyqGsFLe_wl-A6L2cBe1UKIReMcO5uk" target="_blank" class="row-link">YouTube</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">Lambda <span style="color: var(--accent);"><svg width="11" height="14" viewBox="0 0 11 14" style="display:inline-block;vertical-align:middle;margin:0 1px;" xmlns="http://www.w3.org/2000/svg"><polyline points="1,1 5.5,8 10,14" fill="none" stroke="#00e8d5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><polyline points="5.5,8 1,14" fill="none" stroke="#00e8d5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Zulu</div>
+    <a href="ceesh.html" class="footer-copy" style="color: var(--muted); transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">← Ceesh</a>
+  </footer>
+
+</body>
+</html>
