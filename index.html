@@ -35,7 +35,8 @@
       overflow-x: hidden;
     }
 
-    a { color: inherit; text-decoration: none; }
+    a { color: inherit; text-decoration: none; cursor: crosshair; }
+    *, *:hover { cursor: crosshair !important; }
 
     /* ── GRAIN OVERLAY ── */
     body::before {
@@ -472,6 +473,81 @@
       .section-header { padding-left: 20px; padding-right: 20px; }
       .archive-strip { padding-left: 20px; padding-right: 20px; }
     }
+
+    /* ── POPUP MODAL ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: #0f0f0f;
+      border: 1px solid var(--dim);
+      width: 320px;
+      max-width: 90vw;
+      position: relative;
+      animation: fadeUp 0.2s ease both;
+    }
+    .modal-art {
+      width: 100%;
+      aspect-ratio: 1;
+      overflow: hidden;
+      border-bottom: 1px solid var(--dim);
+    }
+    .modal-art img { width: 100%; height: 100%; object-fit: cover; }
+    .modal-art-placeholder { width: 100%; height: 100%; background: #1a1a1a; }
+    .modal-body { padding: 20px 24px 24px; }
+    .modal-year {
+      font-size: 9px;
+      letter-spacing: 0.25em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .modal-title {
+      font-family: var(--display);
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--off-white);
+      margin-bottom: 3px;
+    }
+    .modal-artist {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      margin-bottom: 20px;
+    }
+    .modal-links { display: flex; flex-direction: column; gap: 8px; }
+    .modal-link {
+      display: block;
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 10px 14px;
+      border: 1px solid var(--dim);
+      color: var(--muted);
+      transition: all 0.15s;
+      text-align: center;
+    }
+    .modal-link:hover { border-color: var(--accent); color: var(--accent); }
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      font-size: 16px;
+      color: var(--muted);
+      background: none;
+      border: none;
+      line-height: 1;
+      padding: 4px;
+      transition: color 0.15s;
+    }
+    .modal-close:hover { color: var(--accent); }
   </style>
 </head>
 <body>
@@ -500,7 +576,7 @@
 
   <!-- NAV -->
   <nav>
-    <div class="nav-logo">Lambda<span><svg width="11" height="14" viewBox="0 0 11 14" style="display:inline-block;vertical-align:middle;margin:0 1px;" xmlns="http://www.w3.org/2000/svg"><polyline points="1,1 5.5,8 10,14" fill="none" stroke="#00e8d5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><polyline points="5.5,8 1,14" fill="none" stroke="#00e8d5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Zulu</div>
+    <a href="#" class="nav-logo">Lambda<span><svg width="11" height="14" viewBox="0 0 11 14" style="display:inline-block;vertical-align:middle;margin:0 1px;" xmlns="http://www.w3.org/2000/svg"><polyline points="1,1 5.5,8 10,14" fill="none" stroke="#00e8d5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><polyline points="5.5,8 1,14" fill="none" stroke="#00e8d5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Zulu</a>
     <ul class="nav-links">
       <li><a href="#releases">Releases</a></li>
       <li><a href="#artists">Artists</a></li>
@@ -714,5 +790,80 @@
     <div class="footer-copy">Independent Music Label</div>
   </footer>
 
+
+  <!-- POPUP MODAL -->
+  <div class=modal-overlay id=modal-overlay>
+    <div class=modal id=modal>
+      <button class=modal-close id=modal-close>✕</button>
+      <div class=modal-art id=modal-art></div>
+      <div class=modal-body>
+        <div class=modal-year id=modal-year></div>
+        <div class=modal-title id=modal-title></div>
+        <div class=modal-artist id=modal-artist></div>
+        <div class=modal-links id=modal-links></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const overlay = document.getElementById('modal-overlay');
+    const modalClose = document.getElementById('modal-close');
+
+    function openModal(title, artist, year, imgSrc, links) {
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-artist').textContent = artist;
+      document.getElementById('modal-year').textContent = year;
+      const artEl = document.getElementById('modal-art');
+      artEl.innerHTML = imgSrc
+        ? '<img src="' + imgSrc + '" />'
+        : '<div class="modal-art-placeholder"></div>';
+      const linksEl = document.getElementById('modal-links');
+      linksEl.innerHTML = '';
+      links.forEach(function(l) {
+        const a = document.createElement('a');
+        a.href = l.href;
+        a.target = '_blank';
+        a.className = 'modal-link';
+        a.textContent = l.text;
+        linksEl.appendChild(a);
+      });
+      overlay.classList.add('active');
+    }
+
+    function closeModal() { overlay.classList.remove('active'); }
+    modalClose.addEventListener('click', closeModal);
+    overlay.addEventListener('click', function(e) { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
+
+    // Wire up release cards (main page)
+    document.querySelectorAll('.release-card').forEach(function(card) {
+      card.addEventListener('click', function(e) {
+        if (e.target.tagName === 'A') return;
+        const title = card.querySelector('.release-title') ? card.querySelector('.release-title').textContent : '';
+        const artist = card.querySelector('.release-artist') ? card.querySelector('.release-artist').textContent : '';
+        const year = card.querySelector('.release-year') ? card.querySelector('.release-year').textContent : '';
+        const img = card.querySelector('img');
+        const imgSrc = img ? img.src : null;
+        const linkEls = card.querySelectorAll('.release-link, .release-links a');
+        const links = Array.from(linkEls).map(function(a) { return { href: a.href, text: a.textContent }; });
+        openModal(title, artist, year, imgSrc, links);
+      });
+    });
+
+    // Wire up release rows (artist pages)
+    document.querySelectorAll('.release-row').forEach(function(row) {
+      row.addEventListener('click', function(e) {
+        if (e.target.tagName === 'A') return;
+        const title = row.querySelector('.release-row-title') ? row.querySelector('.release-row-title').textContent : '';
+        const artist = row.querySelector('.release-row-type') ? row.querySelector('.release-row-type').textContent : '';
+        const year = row.querySelector('.release-row-year') ? row.querySelector('.release-row-year').textContent : '';
+        const img = row.querySelector('img');
+        const imgSrc = img ? img.src : null;
+        const linkEls = row.querySelectorAll('.row-link');
+        const links = Array.from(linkEls).map(function(a) { return { href: a.href, text: a.textContent }; });
+        openModal(title, artist, year, imgSrc, links);
+      });
+    });
+  </script>
 </body>
 </html>
