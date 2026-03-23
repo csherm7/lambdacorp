@@ -22,6 +22,7 @@
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { margin: 0; padding: 0; width: 100%; overflow-x: hidden; }
 
     html { scroll-behavior: smooth; }
 
@@ -91,8 +92,12 @@
       border-bottom: 1px solid var(--dim);
       position: sticky;
       top: 0;
+      left: 0;
+      right: 0;
+      margin: 0;
       background: var(--black);
       z-index: 100;
+      box-sizing: border-box;
     }
     .nav-logo {
       font-family: var(--display);
@@ -471,7 +476,42 @@
       .artist-card { border-right: none; border-bottom: 1px solid var(--dim); }
       nav, .hero-text, footer { padding-left: 20px; padding-right: 20px; }
       .section-header { padding-left: 20px; padding-right: 20px; }
-      .archive-strip { padding-left: 20px; padding-right: 20px; }
+    }
+
+    @media (max-width: 600px) {
+      nav {
+        padding: 14px 16px;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .nav-logo {
+        font-size: 9px;
+        letter-spacing: 0.15em;
+      }
+      .nav-links { gap: 16px; }
+      .nav-links a { font-size: 9px; letter-spacing: 0.12em; }
+
+      .hero-text { padding: 32px 16px; }
+      .hero-title { font-size: clamp(28px, 10vw, 48px); }
+      .hero-desc { font-size: 11px; }
+      .stream-links { gap: 8px; }
+      .stream-btn { font-size: 8px; padding: 8px 12px; }
+
+      .section-header { padding: 14px 16px; }
+      .release-grid { grid-template-columns: repeat(2, 1fr); }
+      .release-info { padding: 12px 10px 14px; }
+      .release-title { font-size: 11px; }
+      .release-artist { font-size: 9px; }
+      .release-links { gap: 4px; flex-wrap: wrap; }
+      .release-link { font-size: 7px; padding: 4px 7px; }
+
+      .artist-card { padding: 24px 16px; }
+      .artist-initial { font-size: 48px; }
+      .artist-name { font-size: 14px; }
+
+      footer { padding: 20px 16px; flex-direction: column; gap: 8px; text-align: center; }
+
+      .modal { width: 95vw; }
     }
 
     /* ── POPUP MODAL ── */
@@ -578,8 +618,8 @@
   <nav>
     <a href="#" class="nav-logo">Lambda<span><svg width="11" height="14" viewBox="0 0 11 14" style="display:inline-block;vertical-align:middle;margin:0 1px;" xmlns="http://www.w3.org/2000/svg"><polyline points="1,1 5.5,8 10,14" fill="none" stroke="#00e8d5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><polyline points="5.5,8 1,14" fill="none" stroke="#00e8d5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Zulu</a>
     <ul class="nav-links">
-      <li><a href="#releases">Releases</a></li>
       <li><a href="#artists">Artists</a></li>
+      <li><a href="#releases">Releases</a></li>
     </ul>
   </nav>
 
@@ -629,7 +669,7 @@
       <div class="artist-initial">C</div>
       <div class="artist-name">Ceesh</div>
       <p class="artist-bio">
-        Core Projects - Hip Hop, Post Punk, Instrumentals with presence.
+        Producer and instrumentalist. Patient, textured work that sits somewhere between ambient and beat music — built for late nights and empty rooms.
       </p>
       <div class="artist-socials">
         <a href="ceesh.html" class="social-link" style="border-color: var(--accent); color: var(--accent);">View Artist →</a>
@@ -641,7 +681,7 @@
       <div class="artist-initial">G</div>
       <div class="artist-name">grassbloc</div>
       <p class="artist-bio">
-        Lo-fi, instrumental, and ambient work.
+        Lo-fi and instrumental work rooted in mood and atmosphere. Releases that feel like specific times of day — warm, reflective, and unhurried.
       </p>
       <div class="artist-socials">
         <a href="grassbloc.html" class="social-link" style="border-color: var(--accent); color: var(--accent);">View Artist →</a>
