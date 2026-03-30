@@ -1,5 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" fill="#080810"/>
+  <rect width="32" height="32" rx="6" ry="6" fill="#080810"/>
+  <clipPath id="rounded"><rect width="32" height="32" rx="6" ry="6"/></clipPath>
+  <g clip-path="url(#rounded)">
   <radialGradient id="gal" cx="50%" cy="50%" r="50%">
     <stop offset="0%" stop-color="#1a1040" stop-opacity="0.9"/>
     <stop offset="100%" stop-color="#080810" stop-opacity="0"/>
@@ -39,4 +41,5 @@
   <circle cx="23" cy="18" r="0.35" fill="#00e8d5" opacity="0.4"/>
   <circle cx="19" cy="11" r="0.3" fill="#00e8d5" opacity="0.5"/>
   <text x="50%" y="54%" font-family="Georgia, serif" font-size="16" font-weight="bold" fill="#00e8d5" text-anchor="middle" dominant-baseline="middle" letter-spacing="2" opacity="0.45">λ Ƶ</text>
+  </g>
 </svg>
